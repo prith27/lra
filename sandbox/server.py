@@ -5,6 +5,7 @@ Sandbox manager: FastAPI service that creates and manages isolated code executio
 import os
 import re
 import uuid
+from contextlib import asynccontextmanager
 from typing import Any
 
 import docker

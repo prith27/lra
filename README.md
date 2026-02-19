@@ -1,14 +1,37 @@
 # Long Running Agents
 
-AI agent system with Pydantic AI orchestration, external sandbox API, layered memory (structured + vector), and dynamic tools.
+A **chat-driven AI agent** with persistent memory, code execution, and task tracking. You interact via a terminal loop: type a message, the agent responds using its tools, and context is saved across runs.
+
+**What it is:** A general-purpose conversational agent built with Pydantic AI. It remembers past conversations, can run Python in isolated sandboxes, delegate to specialist subagents, and track multi-step work via tasks.
+
+**What it is not:** A workflow automation engine (no schedules, triggers, or DAGs). It’s an interactive assistant, not Zapier or Airflow.
+
+## How it works
+
+1. Run `python main.py` to start the chat loop.
+2. Type a message; the agent may call tools (search memory, run code, create tasks, delegate to subagents).
+3. Each turn is persisted to SQLite and ChromaDB so the agent can recall past context in future runs.
+4. Each run gets a new session ID, but `get_recent_conversations(all_sessions=True)` and `search_memory` allow cross-session recall.
 
 ## Features
 
-- **Pydantic AI Agent**: Typed agent with memory, sandbox, and task tools
-- **Sandbox API**: Isolated Docker containers for secure code execution
-- **Structured Memory**: SQLite/PostgreSQL for conversations, tasks, summaries
-- **Vector Memory**: ChromaDB for semantic search
-- **Task Tools**: Create, update, list tasks
+- **Persistent memory**: Structured store (SQLite) for conversations and tasks; vector store (ChromaDB) for semantic search. Recall past turns across sessions.
+- **Code execution**: Sandbox API spins up isolated Docker containers for secure Python execution.
+- **Task tracking**: Create, update, and list tasks to manage multi-step work.
+- **Subagent delegation**: Delegate code tasks or research tasks to specialized subagents.
+- **Dynamic tools**: Agent can generate and register new tools at runtime when needed.
+
+## Agent tools
+
+| Tool | Purpose |
+|------|---------|
+| `search_memory` | Semantic search over past summaries and facts (ChromaDB) |
+| `write_memory` | Store facts or summaries for later recall |
+| `get_recent_conversations` | Fetch recent turns (session or all sessions) |
+| `create_task`, `update_task_status`, `list_tasks` | Track multi-step work |
+| `create_sandbox`, `execute_code` | Run Python in isolated containers |
+| `delegate_code_task`, `delegate_research_task` | Hand off to specialist subagents |
+| `generate_tool` | Create new tools at runtime when no existing tool fits |
 
 ## Setup
 

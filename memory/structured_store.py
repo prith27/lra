@@ -80,6 +80,29 @@ class StructuredMemoryStore:
             for r in reversed(rows)
         ]
 
+    async def get_conversations_all_sessions(
+        self,
+        limit: int = 20,
+    ) -> list[dict[str, Any]]:
+        """Get recent conversation turns across all sessions, ordered by timestamp (most recent first)."""
+        async with self._session_factory() as session:
+            stmt = (
+                select(Conversation)
+                .order_by(Conversation.timestamp.desc())
+                .limit(limit)
+            )
+            result = await session.execute(stmt)
+            rows = result.scalars().all()
+        return [
+            {
+                "role": r.role,
+                "content": r.content,
+                "timestamp": r.timestamp.isoformat(),
+                "session_id": r.session_id,
+            }
+            for r in reversed(rows)
+        ]
+
     async def upsert_task(
         self,
         session_id: str,
