@@ -28,6 +28,20 @@ async def write_memory(
     return f"Stored in memory (id={mem_id})"
 
 
+async def get_recent_conversations(
+    ctx: RunContext[AgentDeps],
+    limit: int = 10,
+    all_sessions: bool = False,
+) -> list[dict[str, str]]:
+    """Get recent conversation turns. Use for 'what was our last conversation?' or recalling prior turns.
+    Set all_sessions=True to get recent turns across all sessions (e.g. when current session is empty or user asks about 'last convo' from past runs)."""
+    if all_sessions:
+        return await ctx.deps.structured_store.get_conversations_all_sessions(limit=limit)
+    return await ctx.deps.structured_store.get_conversations(
+        ctx.deps.session_id, limit=limit
+    )
+
+
 async def get_task_state(ctx: RunContext[AgentDeps], task_id: str) -> TaskState | None:
     """Get task state by ID. Returns None if not found."""
     task = await ctx.deps.structured_store.get_task(ctx.deps.session_id, task_id)

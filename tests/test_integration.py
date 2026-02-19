@@ -1,9 +1,9 @@
 """Integration tests for the agent system."""
 
-import asyncio
 import uuid
 
 import pytest
+import pytest_asyncio
 
 from agents.deps import AgentDeps
 from config import SANDBOX_URL
@@ -16,7 +16,7 @@ def session_id() -> str:
     return str(uuid.uuid4())[:8]
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def structured_store():
     store = StructuredMemoryStore("sqlite+aiosqlite:///:memory:")
     await store.init_db()
@@ -29,7 +29,7 @@ def vector_store(session_id):
     return VectorMemoryStore(persist_path=f"/tmp/test_chroma_{session_id}")
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def deps(session_id, structured_store, vector_store):
     return AgentDeps(
         session_id=session_id,
