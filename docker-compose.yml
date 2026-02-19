@@ -1,0 +1,19 @@
+version: "3.8"
+
+# Sandbox API: Run with `docker compose up sandbox` from project root.
+# The sandbox manager needs the host Docker socket to spawn code-execution containers.
+services:
+  sandbox:
+    build:
+      context: .
+      dockerfile: sandbox/Dockerfile.manager
+    image: longrunningagents-sandbox:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    working_dir: /app
+    command: ["python", "-m", "uvicorn", "sandbox.server:app", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      - PYTHONPATH=/app

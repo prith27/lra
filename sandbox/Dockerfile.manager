@@ -1,0 +1,15 @@
+# Dockerfile for the sandbox manager service (not the kernel)
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Install deps for sandbox manager
+COPY requirements.txt .
+RUN pip install --no-cache-dir fastapi uvicorn httpx pydantic docker python-dotenv
+
+# Copy project
+COPY . .
+
+ENV PYTHONPATH=/app
+EXPOSE 8000
+CMD ["python", "-m", "uvicorn", "sandbox.server:app", "--host", "0.0.0.0", "--port", "8000"]
