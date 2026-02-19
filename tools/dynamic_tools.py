@@ -1,7 +1,6 @@
 """Dynamic tool generation: agent creates new tools at runtime."""
 
 import ast
-import os
 import uuid
 from pathlib import Path
 from typing import Any
@@ -21,7 +20,6 @@ DYNAMIC_TOOLS_DIR = Path(__file__).parent / "dynamic"
 FORBIDDEN_NODE_TYPES = (
     ast.Import,
     ast.ImportFrom,
-    ast.Exec,
     ast.Global,
     ast.Nonlocal,
     ast.Lambda,

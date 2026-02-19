@@ -1,6 +1,6 @@
-"""Memory package: structured and vector stores."""
+"""Memory package exports."""
 
+# Keep package import lightweight: vector store pulls optional heavy deps.
 from memory.structured_store import StructuredMemoryStore
-from memory.vector_store import VectorMemoryStore
 
-__all__ = ["StructuredMemoryStore", "VectorMemoryStore"]
+__all__ = ["StructuredMemoryStore"]
