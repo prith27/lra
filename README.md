@@ -146,14 +146,16 @@ lra validate-tool FILE      # Validate a tool file in sandbox
 
 The sandbox enables code execution and tool validation. It includes `requests` and `httpx` for HTTP-fetching tools. Basic chat and memory work without it.
 
-**Prerequisites:** Docker must be installed and running. The sandbox spawns isolated containers for code execution.
+**Prerequisites:** Docker must be installed and running. On macOS, open Docker Desktop and wait until it's ready before starting the sandbox. The sandbox spawns isolated containers for code execution.
 
 ### Run order
 
-Start the sandbox **before** using code execution or creating tools. Run it in a separate terminal from `lra chat`.
+1. **Start Docker** (e.g. open Docker Desktop on Mac).
+2. Start the sandbox in one terminal.
+3. Run the agent in another terminal.
 
 ```bash
-# Terminal 1: Start sandbox (keep running)
+# Terminal 1: Ensure Docker is running, then start sandbox (keep running)
 python -m uvicorn sandbox.server:app --reload --port 8000
 
 # Terminal 2: Run agent
