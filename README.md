@@ -111,6 +111,28 @@ lra inspect-tool X    # Inspect a dynamic tool
 lra list-memory -s SESSION  # List memory for a session
 ```
 
+### Framework commands
+
+Create and run custom agents with their own system prompts:
+
+```bash
+lra create-agent [name]     # Create agent dir (default: my_agent). Use --prompt or enter interactively
+lra run [path]              # Run a custom agent (path to agent dir or main.py)
+lra list-agents             # List agent directories
+lra config                 # Show config
+```
+
+Create and manage tools:
+
+```bash
+lra create-tool             # Create a tool interactively
+lra create-tool --file X    # Create a tool from a Python file
+lra export-tools [-o path]  # Export dynamic tools to static file
+lra validate-tool FILE      # Validate a tool file in sandbox
+```
+
+**Note:** `my_agent/` and `*_agent/` are in `.gitignore` by default so user-created agents are not committed. Add your own pattern to `.gitignore` if you want to ignore different agent dirs.
+
 ## Configuration
 
 | Variable | Description | Default |
