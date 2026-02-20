@@ -111,6 +111,28 @@ lra inspect-tool X    # Inspect a dynamic tool
 lra list-memory -s SESSION  # List memory for a session
 ```
 
+### Framework commands
+
+Create and run custom agents with their own system prompts:
+
+```bash
+lra create-agent [name]     # Create agent dir (default: my_agent). Use --prompt or enter interactively
+lra run [path]              # Run a custom agent (path to agent dir or main.py)
+lra list-agents             # List agent directories
+lra config                 # Show config
+```
+
+Create and manage tools:
+
+```bash
+lra create-tool             # Create a tool interactively
+lra create-tool --file X    # Create a tool from a Python file
+lra export-tools [-o path]  # Export dynamic tools to static file
+lra validate-tool FILE      # Validate a tool file in sandbox
+```
+
+**Note:** `my_agent/` and `*_agent/` are in `.gitignore` by default so user-created agents are not committed. Add your own pattern to `.gitignore` if you want to ignore different agent dirs.
+
 ## Configuration
 
 | Variable | Description | Default |
@@ -124,14 +146,16 @@ lra list-memory -s SESSION  # List memory for a session
 
 The sandbox enables code execution and tool validation. It includes `requests` and `httpx` for HTTP-fetching tools. Basic chat and memory work without it.
 
-**Prerequisites:** Docker must be installed and running. The sandbox spawns isolated containers for code execution.
+**Prerequisites:** Docker must be installed and running. On macOS, open Docker Desktop and wait until it's ready before starting the sandbox. The sandbox spawns isolated containers for code execution.
 
 ### Run order
 
-Start the sandbox **before** using code execution or creating tools. Run it in a separate terminal from `lra chat`.
+1. **Start Docker** (e.g. open Docker Desktop on Mac).
+2. Start the sandbox in one terminal.
+3. Run the agent in another terminal.
 
 ```bash
-# Terminal 1: Start sandbox (keep running)
+# Terminal 1: Ensure Docker is running, then start sandbox (keep running)
 python -m uvicorn sandbox.server:app --reload --port 8000
 
 # Terminal 2: Run agent

@@ -56,3 +56,7 @@ htmlcov/
 # Dynamic tools (generated)
 tools/dynamic/*.py
 !tools/dynamic/.gitkeep
+
+# User-created agents (add my_agent/ or *_agent/ if you don't want to commit)
+my_agent/
+*_agent/

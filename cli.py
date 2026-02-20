@@ -140,6 +140,44 @@ def main() -> int:
     list_mem.add_argument("--limit", "-n", type=int, default=10, help="Limit")
     list_mem.set_defaults(func=cmd_list_memory)
 
+    # Framework commands
+    from cli_framework import (
+        cmd_config,
+        cmd_create_agent,
+        cmd_create_tool,
+        cmd_export_tools,
+        cmd_list_agents,
+        cmd_run,
+        cmd_validate_tool,
+    )
+
+    create_agent = sub.add_parser("create-agent", help="Create a new agent with custom system prompt")
+    create_agent.add_argument("name", nargs="?", default="my_agent", help="Agent directory name")
+    create_agent.add_argument("--prompt", "-p", help="System prompt (or enter interactively)")
+    create_agent.set_defaults(func=cmd_create_agent)
+
+    run = sub.add_parser("run", help="Run a custom agent")
+    run.add_argument("path", nargs="?", default=".", help="Path to agent directory or main.py")
+    run.set_defaults(func=cmd_run)
+
+    create_tool = sub.add_parser("create-tool", help="Create a tool (interactive or from file)")
+    create_tool.add_argument("--file", "-f", help="Path to Python file with function")
+    create_tool.set_defaults(func=cmd_create_tool)
+
+    list_agents = sub.add_parser("list-agents", help="List agent directories")
+    list_agents.set_defaults(func=cmd_list_agents)
+
+    config = sub.add_parser("config", help="Show config")
+    config.set_defaults(func=cmd_config)
+
+    export = sub.add_parser("export-tools", help="Export dynamic tools to static file")
+    export.add_argument("--output", "-o", default="tools/custom_tools.py", help="Output path")
+    export.set_defaults(func=cmd_export_tools)
+
+    validate = sub.add_parser("validate-tool", help="Validate a tool file in sandbox")
+    validate.add_argument("file", help="Path to tool Python file")
+    validate.set_defaults(func=cmd_validate_tool)
+
     args = parser.parse_args()
     args.func(args)
     return 0
