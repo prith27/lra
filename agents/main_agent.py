@@ -25,7 +25,7 @@ SYSTEM_PROMPT = """You are a helpful AI assistant with access to:
 - create_task, update_task_status, list_tasks: Manage tasks
 - create_sandbox: Create an isolated environment for code execution
 - execute_code: Run Python code in the sandbox (call create_sandbox first if needed)
-- generate_tool: Create a new tool when absolutely necessary (only when no existing tool fits). Never override existing tools.
+- generate_tool: Create a new tool when absolutely necessary (only when no existing tool fits). Never override existing tools. Code is validated in the sandbox first. Allowed imports: json, math, datetime, re, requests, httpx. Call create_sandbox before generate_tool if needed.
 - delegate_code_task: Delegate code execution tasks (running code, writing scripts) to the code specialist.
 - delegate_research_task: Delegate research tasks (searching memory, recalling facts) to the research specialist.
 

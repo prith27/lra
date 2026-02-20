@@ -16,10 +16,11 @@ _dynamic_tool_registry: dict[str, tuple[Any, dict[str, Any]]] = {}
 # Path for persisting dynamic tool source
 DYNAMIC_TOOLS_DIR = Path(__file__).parent / "dynamic"
 
-# Dangerous AST node types
+# Allowed imports for generated tools (must be in sandbox Dockerfile)
+ALLOWED_IMPORTS = {"json", "math", "datetime", "re", "requests", "httpx"}
+
+# Dangerous AST node types (Import/ImportFrom validated separately via ALLOWED_IMPORTS)
 FORBIDDEN_NODE_TYPES = (
-    ast.Import,
-    ast.ImportFrom,
     ast.Global,
     ast.Nonlocal,
     ast.Lambda,
@@ -29,6 +30,15 @@ FORBIDDEN_NODE_TYPES = (
 
 # Forbidden names in code
 FORBIDDEN_NAMES = {"os", "sys", "subprocess", "eval", "exec", "compile", "__import__", "open"}
+
+
+def _get_import_module(node: ast.Import | ast.ImportFrom) -> str:
+    """Get top-level module name from Import or ImportFrom node."""
+    if isinstance(node, ast.Import):
+        # import foo or import foo.bar -> "foo"
+        return node.names[0].name.split(".")[0]
+    # from foo import x or from foo.bar import x -> "foo"
+    return (node.module or "").split(".")[0]
 
 
 def _validate_ast(code: str) -> None:
@@ -41,6 +51,10 @@ def _validate_ast(code: str) -> None:
     for node in ast.walk(tree):
         if type(node) in FORBIDDEN_NODE_TYPES:
             raise ValueError(f"Forbidden construct: {type(node).__name__}")
+        if isinstance(node, (ast.Import, ast.ImportFrom)):
+            mod = _get_import_module(node)
+            if mod and mod not in ALLOWED_IMPORTS:
+                raise ValueError(f"Forbidden import: {mod}. Allowed: {sorted(ALLOWED_IMPORTS)}")
         if isinstance(node, ast.Name) and node.id in FORBIDDEN_NAMES:
             raise ValueError(f"Forbidden name: {node.id}")
         if isinstance(node, ast.Attribute):
@@ -72,6 +86,7 @@ async def generate_tool(
     doc: str,
 ) -> str:
     """Generate and register a new tool. Only use when absolutely necessary. Never override existing tools.
+    Code is validated in the sandbox before registration. Allowed imports: json, math, datetime, re, requests, httpx.
 
     Args:
         name: Function name (valid Python identifier)
@@ -89,6 +104,14 @@ async def generate_tool(
         return f"Validation failed: {e}"
     except Exception as e:
         return f"Compilation failed: {e}"
+
+    # Sandbox validation: run code to verify it executes without error
+    full_code = _assemble_function(name, args, code, doc)
+    from tools.sandbox_tools import _execute_in_sandbox_raw
+
+    success, stdout, stderr = await _execute_in_sandbox_raw(ctx, full_code)
+    if not success:
+        return f"Sandbox validation failed: {stderr or 'Execution error'}. Fix the code and try again."
 
     tool_id = str(uuid.uuid4())[:8]
     _dynamic_tool_registry[name] = (tool, {"args": args, "doc": doc, "created_at": tool_id})

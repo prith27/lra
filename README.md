@@ -54,7 +54,7 @@ lra chat
 
 Or run `lra init` first to create a `.env` file and see setup instructions.
 
-**Note:** Basic chat and memory work without the sandbox. The sandbox is only needed for code execution (see [Sandbox](#sandbox-optional) below).
+**Note:** Basic chat and memory work without the sandbox. For code execution or dynamic tool creation, start the sandbox first in a separate terminal (see [Sandbox](#sandbox-optional)).
 
 ## How it works
 
@@ -122,14 +122,40 @@ lra list-memory -s SESSION  # List memory for a session
 
 ## Sandbox (optional)
 
-The sandbox enables code execution. Basic chat and memory work without it.
+The sandbox enables code execution and tool validation. It includes `requests` and `httpx` for HTTP-fetching tools. Basic chat and memory work without it.
+
+**Prerequisites:** Docker must be installed and running. The sandbox spawns isolated containers for code execution.
+
+### Run order
+
+Start the sandbox **before** using code execution or creating tools. Run it in a separate terminal from `lra chat`.
 
 ```bash
-# Option A: Run locally (requires Docker)
+# Terminal 1: Start sandbox (keep running)
 python -m uvicorn sandbox.server:app --reload --port 8000
 
-# Option B: Docker Compose
-docker compose up sandbox
+# Terminal 2: Run agent
+lra chat
+```
+
+### Options
+
+| Option | Command | When to use |
+|--------|---------|-------------|
+| **A: Local** | `python -m uvicorn sandbox.server:app --reload --port 8000` | Development; run from project root with deps installed |
+| **B: Docker Compose** | `docker compose up sandbox` | Fully containerized; no local Python needed for sandbox |
+
+### First run
+
+On first start, the kernel image (`longrunningagents-kernel:latest`) is built automatically. This may take a minute.
+
+### Rebuild kernel
+
+If you updated `sandbox/Dockerfile` (e.g. added packages), rebuild the kernel:
+
+```bash
+docker rmi longrunningagents-kernel:latest
+# Then restart the sandbox
 ```
 
 ## Project structure
