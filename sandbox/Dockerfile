@@ -8,7 +8,7 @@ WORKDIR /app
 
 # Minimal deps for kernel server
 COPY --chown=sandbox:sandbox kernel_server.py .
-RUN pip install --user --no-cache-dir fastapi uvicorn pydantic
+RUN pip install --user --no-cache-dir fastapi uvicorn pydantic requests httpx
 
 # Disable Python output buffering
 ENV PYTHONUNBUFFERED=1
