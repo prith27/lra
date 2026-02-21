@@ -45,14 +45,28 @@ cd lra
 pip install -e .
 ```
 
+## Setup
+
+Set your OpenAI API key (required). Choose one:
+
+```bash
+# Option A: Export in shell
+export OPENAI_API_KEY=sk-your-key-here
+
+# Option B: Create .env file in your project directory
+echo "OPENAI_API_KEY=sk-your-key-here" > .env
+
+# Option C: Use lra init to create .env template, then add your key
+lra init
+```
+
+Get a key at [platform.openai.com/api-keys](https://platform.openai.com/api-keys).
+
 ## Quick start
 
 ```bash
-export OPENAI_API_KEY=sk-your-key-here   # or use lra init to create .env
 lra chat
 ```
-
-Or run `lra init` first to create a `.env` file and see setup instructions.
 
 **Note:** Basic chat and memory work without the sandbox. For code execution or dynamic tool creation, start the sandbox first in a separate terminal (see [Sandbox](#sandbox-optional)).
 
@@ -100,6 +114,22 @@ async def main():
 
 asyncio.run(main())
 ```
+
+## Examples
+
+Examples are included in the package. After installing:
+
+```bash
+python -m long_running_agents.examples.01_basic_chat
+python -m long_running_agents.examples.02_single_turn "Your question here"
+```
+
+| Example | Description |
+|---------|-------------|
+| `01_basic_chat` | Chat loop: multiple turns, memory persists across runs |
+| `02_single_turn` | One-off query: ask a question, get a response, exit |
+
+When installed from source, see `long_running_agents/examples/README.md` for details.
 
 ## CLI
 
@@ -187,11 +217,12 @@ docker rmi longrunningagents-kernel:latest
 ```
 ├── agents/              # Main agent and subagents
 ├── tools/               # Memory, sandbox, task tools
-├── sandbox/              # Sandbox API and kernel
-├── memory/               # Structured and vector stores
-├── schemas/              # Pydantic models
-├── long_running_agents/  # Package exports
-├── cli.py                # CLI entry point
+├── sandbox/             # Sandbox API and kernel
+├── memory/              # Structured and vector stores
+├── schemas/             # Pydantic models
+├── long_running_agents/ # Package exports
+├── long_running_agents/examples/  # Example recipes (shipped with package)
+├── cli.py               # CLI entry point
 ├── config.py
 ├── main.py
 └── pyproject.toml
